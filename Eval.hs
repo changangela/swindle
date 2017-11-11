@@ -1,12 +1,16 @@
 module Eval where
+import Data.Map (Map)
 import qualified Data.Map as Map
 
 -- a Name is a string used as an identifier and bound to an environment
 type Name = [Char]
 
 data Expression 
+    -- Variable <Name> = <Name>
     = Variable Name
+    -- Function <Variable> <Expression> = (λ<Variable>.<Expression>)
     | Function Name Expression
+    -- Application <Expression> <Expression> = (<Expression> <Expression>)
     | Application Expression Expression
     deriving Eq
 
@@ -24,7 +28,14 @@ lambda = Function "y" y
 x = Variable "x"
 app = Application lambda x
 
-testExpressions = Map.fromList [("y", y), ("lambda", lambda), ("x", x), ("app", app)]
+
+-- λxy.y -> λx.(λy.(y))
+false = Function "x" (Function "y" (Variable "y"))
+
+expressionsMap = Map.fromList [("y", y), ("lambda", lambda), ("x", x), ("app", app), ("false", false)]
 
 test :: String -> String
-test name = show (Map.lookup name testExpressions)
+test name = do
+    case (Map.lookup name expressionsMap) of
+        Just expr -> show expr
+        Nothing -> "error: '" ++ name ++ "' not found"

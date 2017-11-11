@@ -2,6 +2,7 @@ module Parse where
 import Eval
 import System.IO
 
+
 -- the interpreter controls the input and output
 
 interpreter :: IO()
@@ -26,4 +27,9 @@ prompt text = do
 -- the parsing function will turn the key words into lambda functions
 
 parse :: String -> String
-parse expression = test expression
+parse expression = do
+    let input = (words expression)   
+    case head input of
+        "test" -> test (last input)
+        _ -> expression
+
