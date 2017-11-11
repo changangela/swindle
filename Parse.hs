@@ -26,4 +26,4 @@ prompt text = do
 -- the parsing function will turn the key words into lambda functions
 
 parse :: String -> String
-parse expression = expression
+parse expression = test expression
