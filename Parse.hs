@@ -1,6 +1,7 @@
 module Parse where
 import Eval
 import System.IO
+import Test
 
 
 -- the interpreter controls the input and output
