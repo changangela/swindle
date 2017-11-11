@@ -5,6 +5,10 @@ import qualified Data.Map as Map
 -- a Name is a string used as an identifier and bound to an environment
 type Name = [Char]
 
+
+
+
+
 data Expression 
     -- Variable <Name> = <Name>
     = Variable Name
