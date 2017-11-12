@@ -20,29 +20,43 @@ instance Show Expression where
     show (Application expr1 expr2) = "(" ++ show expr1 ++ " " ++ show expr2 ++ ")"
 
 --abstractions = Map.fromList [
---	("*", "λxyz.x(yz)"),
 
---	("&&", "λxy.xy(F)"),
---	("||", "λxy.xTy"),
---	("!", "λx.xFT"),
 --	("Z", "λx.xF!F"), -- checks if a number is zero
 --	("Q", "λxy.y(S(xT))(xT)") -- increment a pair
 --	("P", "λn.nQ(λx.xFF)F"),
 --	(">", "λxy.Z(xPy)"),
 --	(
 
+-- zero λxy.y
+_zero = Function "x" (Function "y" (Variable "y"))
 --	succ λwyx.y(wyx)
 _succ = Function "w" (Function "y" (Function "x" (Application (Variable "y") (Application (Application (Variable "w") (Variable "y")) (Variable "x")))))
 --	add λxy.(x (succ(y)))
 _add = Function "x" (Function "y" (Application (Variable "x") _succ ))
+--	multiply λxyz.x(yz)
+_multiply = Function "x" (Function "y" (Function "z" (Application (Variable "x") (Application (Variable "y") (Variable "z")))))
 --	false λxy.y
 _false = Function "x" (Function "y" (Variable "y"))
 --	true λxy.x
 _true = Function "x" (Function "y" (Variable "x"))
 --	or λxy.xTy
 _or = Function "x" (Function "y" (Application (Application (Variable "x") _true) (Variable "y")))
+--	and λxy.xyF
+_and = Function "x" (Function "y"(Application (Application (Variable "x") (Variable "y")) _false))
+--	not λx.xFT
+_not = Function "x" (Application (Application (Variable "x") _false) _true)
 
 
 
 
-expressionsMap = Map.fromList [("succ", _succ), ("add", _add), ("true", _true), ("false", _false), ("or", _or)]
+expressionsMap = Map.fromList [
+	("zero", _zero),
+	("succ", _succ),
+	("add", _add),
+	("multiply", _multiply),
+	("true", _true),
+	("false", _false),
+	("or", _or),
+	("and", _and),
+	("not", _not)
+	]
