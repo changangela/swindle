@@ -1,7 +1,7 @@
 module Test where
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Abstraction
+import Syntax
 
 test :: String -> String
 test name = do

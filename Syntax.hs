@@ -1,4 +1,4 @@
-module Abstraction where
+module Syntax where
 import Data.Map (Map)
 import qualified Data.Map as Map
 
@@ -28,11 +28,11 @@ instance Show Expression where
 --	(
 
 -- zero λxy.y
-_zero = Function "x" (Function "y" (Variable "y"))
+_zero = Function "s" (Function "z" (Variable "z"))
 --	succ λwyx.y(wyx)
 _succ = Function "w" (Function "y" (Function "x" (Application (Variable "y") (Application (Application (Variable "w") (Variable "y")) (Variable "x")))))
 --	add λxy.(x (succ(y)))
-_add = Function "x" (Function "y" (Application (Variable "x") _succ ))
+_add = Function "x" (Function "y" (Application (Variable "x") (Application _succ (Variable "y"))))
 --	multiply λxyz.x(yz)
 _multiply = Function "x" (Function "y" (Function "z" (Application (Variable "x") (Application (Variable "y") (Variable "z")))))
 --	false λxy.y
@@ -47,16 +47,17 @@ _and = Function "x" (Function "y"(Application (Application (Variable "x") (Varia
 _not = Function "x" (Application (Application (Variable "x") _false) _true)
 
 
-
+_number :: Int -> Expression
+_number n = Function "s" (Function "z" (foldl (\expression temp -> (Application (Variable "s") expression)) (Variable "z") (take n (repeat 0))))
 
 expressionsMap = Map.fromList [
-	("zero", _zero),
-	("succ", _succ),
-	("add", _add),
-	("multiply", _multiply),
-	("true", _true),
-	("false", _false),
-	("or", _or),
-	("and", _and),
-	("not", _not)
-	]
+        ("zero", _zero),
+        ("succ", _succ),
+        ("add", _add),
+        ("multiply", _multiply),
+        ("true", _true),
+        ("false", _false),
+        ("or", _or),
+        ("and", _and),
+        ("not", _not)
+    ]

@@ -2,7 +2,7 @@ module Parse where
 import Eval
 import System.IO
 import Test
-import Abstraction
+import Syntax
 
 -- the interpreter controls the input and output
 
@@ -32,6 +32,6 @@ parse expression = do
     let input = (words expression)   
     case head input of
         "test" -> test (last input)
-        "eval" -> show (eval (Application _succ _false))
+        "number" -> show (_number (read (last input)::Int))
         _ -> expression
 
