@@ -21,7 +21,6 @@ instance Show Expression where
 
 --abstractions = Map.fromList [
 
---	("Z", "λx.xF!F"), -- checks if a number is zero
 --	("Q", "λxy.y(S(xT))(xT)") -- increment a pair
 --	("P", "λn.nQ(λx.xFF)F"),
 --	(">", "λxy.Z(xPy)"),
@@ -45,19 +44,21 @@ _or = Function "x" (Function "y" (Application (Application (Variable "x") _true)
 _and = Function "x" (Function "y"(Application (Application (Variable "x") (Variable "y")) _false))
 --	not λx.xFT
 _not = Function "x" (Application (Application (Variable "x") _false) _true)
-
+--	isZero λx.xF!F -- checks if a number is zero
+_isZero = Function "x" (Application (Application (Application (Variable "x") _false) _not) _false)
 
 _number :: Int -> Expression
 _number n = Function "s" (Function "z" (foldl (\expression temp -> (Application (Variable "s") expression)) (Variable "z") (take n (repeat 0))))
 
 expressionsMap = Map.fromList [
-        ("zero", _zero),
-        ("succ", _succ),
-        ("add", _add),
-        ("multiply", _multiply),
-        ("true", _true),
-        ("false", _false),
-        ("or", _or),
-        ("and", _and),
-        ("not", _not)
+    ("zero", _zero),
+    ("succ", _succ),
+    ("add", _add),
+    ("multiply", _multiply),
+    ("true", _true),
+    ("false", _false),
+    ("or", _or),
+    ("and", _and),
+    ("not", _not),
+    ("isZero", _isZero)
     ]
