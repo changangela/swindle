@@ -19,7 +19,7 @@ isVal _ = False
 eval' :: Expression -> Maybe Expression
 eval' x = case x of
   IsZero Zero               -> Just Tr
-  IsZero (isNum t) -> Just Fl
+  IsZero (Succ t) | isNum t -> Just Fl
   IsZero t                  -> IsZero <$> (eval' t)
   Succ t                    -> Succ <$> (eval' t)
   Pred Zero                 -> Just Zero

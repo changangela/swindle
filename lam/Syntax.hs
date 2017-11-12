@@ -12,12 +12,18 @@ data Expression
     | Function Name Expression
     -- Application <Expression> <Expression> = (<Expression> <Expression>)
     | Application Expression Expression
-    deriving Eq
+    -- Literal abstraction in order to differentiate between false and zero
+    deriving (Eq, Show)
 
-instance Show Expression where
-    show (Variable name) = name
-    show (Function identifier expression) = "(λ" ++ identifier ++ "." ++ show expression ++ ")"
-    show (Application expr1 expr2) = "(" ++ show expr1 ++ " " ++ show expr2 ++ ")"
+-- instance Show Expression where
+--     show (Variable name) = name
+--     show (Function identifier expression) = "(λ" ++ identifier ++ "." ++ show expression ++ ")"
+--     show (Application expr1 expr2) = "(" ++ show expr1 ++ " " ++ show expr2 ++ ")"
+
+data Literal
+    = LInt Int
+    | LBool Bool
+    deriving (Show, Eq, Ord)
 
 --abstractions = Map.fromList [
 
@@ -45,7 +51,7 @@ _and = Function "x" (Function "y"(Application (Application (Variable "x") (Varia
 --	not λx.xFT
 _not = Function "x" (Application (Application (Variable "x") _false) _true)
 --	isZero λx.xF!F -- checks if a number is zero
-_isZero = Function "x" (Application (Application (Application (Variable "x") _false) _not) _false)
+_is_zero = Function "x" (Application (Application (Application (Variable "x") _false) _not) _false)
 
 _number :: Int -> Expression
 _number n = Function "s" (Function "z" (foldl (\expression temp -> (Application (Variable "s") expression)) (Variable "z") (take n (repeat 0))))
@@ -60,5 +66,5 @@ expressionsMap = Map.fromList [
     ("or", _or),
     ("and", _and),
     ("not", _not),
-    ("isZero", _isZero)
+    ("is-zero", _is_zero)
     ]

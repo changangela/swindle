@@ -22,8 +22,7 @@ data Content =
     | Content Name Lambda Content
 
 environmentLookup :: Name -> Content -> Lambda
--- environmentLookup item (Root) = item
-
+environmentLookup item (Root) = Lambda item (Variable item) Root
 environmentLookup item (Content key value parent) = 
     if item == key then
         value
@@ -35,7 +34,7 @@ environmentLookup item (Content key value parent) =
 evalExpression :: Content -> Expression -> Lambda
 
 
-evalExpression env (Function param body) = Lambda param (expression (evalExpression env body)) env
+evalExpression env (Function param body) = Lambda param body env
 
 -- evalExpression env (Function param body) = Lambda param body env
 

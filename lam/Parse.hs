@@ -33,5 +33,6 @@ parse expression = do
     case head input of
         "test" -> test (last input)
         "number" -> show (_number (read (last input)::Int))
+        "eval" -> show (eval [] (Application _succ _zero))
         _ -> expression
 
