@@ -16,7 +16,8 @@ instance Show SchemeVal where
   show (String contents) = "\"" ++ contents ++ "\""
   show (Bool True) = "true"
   show (Bool False) = "false"
-  show (List contents) = "(" ++ unwordsList contents ++ ")"
+  show (List contents) =  if (null contents) then "'()"
+                          else"(list " ++ unwordsList contents ++ ")"
   show (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ show tail ++ ")"
 
 unwordsList :: [SchemeVal] -> String

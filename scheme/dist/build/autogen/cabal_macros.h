@@ -7,6 +7,13 @@
   (major1) == 4 && (major2) <  8 || \
   (major1) == 4 && (major2) == 8 && (minor) <= 2)
 
+/* package mtl-2.2.1 */
+#define VERSION_mtl "2.2.1"
+#define MIN_VERSION_mtl(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  2 || \
+  (major1) == 2 && (major2) == 2 && (minor) <= 1)
+
 /* package parsec-3.1.11 */
 #define VERSION_parsec "3.1.11"
 #define MIN_VERSION_parsec(major1,major2,minor) (\
@@ -70,5 +77,5 @@
   (major1) == 2 && (major2) <  26 || \
   (major1) == 2 && (major2) == 26 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "schem_7GOYj87Lu9xAdiWJVrcLb5"
+#define CURRENT_PACKAGE_KEY "schem_J4dn4eq8W1DIz9DsmfK7VH"
 

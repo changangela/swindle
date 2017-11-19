@@ -1,16 +1,17 @@
 module Parser where
-import System.Environment
-import Text.ParserCombinators.Parsec hiding (spaces)
-import Control.Monad
 import Syntax
+import Error
+import System.Environment
+import Control.Monad.Except
+import Text.ParserCombinators.Parsec hiding (spaces)
 
 symbol :: Parser Char
 symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
 
-readExpr :: String -> SchemeVal
+readExpr :: String -> ThrowsError SchemeVal
 readExpr input = case parse parseExpr "scheme" input of
-  Left err -> String $ "no match: " ++ show err
-  Right val -> val
+  Left err -> throwError $ Parser err
+  Right val -> return val
 
 spaces :: Parser ()
 spaces = skipMany1 space
