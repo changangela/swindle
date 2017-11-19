@@ -24,17 +24,39 @@ data RacketVal
       closure :: Env
     }
 
-instance Show RacketVal where
-  show (Atom name) = name
-  show (Number contents) = show contents
-  show (String contents) = "\"" ++ contents ++ "\""
-  show (Bool True) = "true"
-  show (Bool False) = "false"
-  show (List contents) =  if (null contents) then "'()"
-                          else"(list " ++ unwordsList contents ++ ")"
-  -- show (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ show tail ++ ")"
-  show (Cond question answer) = "[" ++ show question ++ " " ++ show answer ++ "]"
+showVal :: RacketVal -> String
+showVal (Atom name) = name
+showVal (Number contents) = show contents
+showVal (String contents) = "\"" ++ contents ++ "\""
+showVal (Bool True) = "true"
+showVal (Bool False) = "false"
+showVal (List contents) =  if (null contents) then "'()"
+                        else"(list " ++ unwordsList contents ++ ")"
+-- show (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ show tail ++ ")"
+showVal (Cond question answer) = "[" ++ show question ++ " " ++ show answer ++ "]"
+showVal (PrimitiveFunc _) = "<primitive>"
+showVal (Func {params = args, vararg = varargs, body = body, closure = env}) = 
+  "(lambda (" ++ unwords (map show args) ++
+    (case varargs of
+       Nothing -> ""
+       Just arg -> " . " ++ arg) ++ ") ...)"
 
+instance Show RacketVal where show = showVal
+  -- show (Atom name) = name
+  -- show (Number contents) = show contents
+  -- show (String contents) = "\"" ++ contents ++ "\""
+  -- show (Bool True) = "true"
+  -- show (Bool False) = "false"
+  -- show (List contents) =  if (null contents) then "'()"
+  --                         else"(list " ++ unwordsList contents ++ ")"
+  -- -- show (DottedList head tail) = "(" ++ unwordsList head ++ " . " ++ show tail ++ ")"
+  -- show (Cond question answer) = "[" ++ show question ++ " " ++ show answer ++ "]"
+  -- show (PrimitiveFunc _) = "<primitive>"
+  -- show (Func {params = args, vararg = varargs, body = body, closure = env}) = 
+  --   "(lambda (" ++ unwords (map show args) ++
+  --     (case varargs of
+  --        Nothing -> ""
+  --        Just arg -> " . " ++ arg) ++ ") ...)"
 
 unwordsList :: [RacketVal] -> String
 unwordsList = unwords . map show
@@ -123,7 +145,3 @@ bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
           addBinding (var, value) = do 
             ref <- newIORef value
             return (var, ref)
-
--- initialize some keywords
-racketEnv :: IO Env
-racketEnv = nullEnv >>= (flip bindVars [("empty", List [])])
