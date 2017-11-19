@@ -1,23 +1,24 @@
 module Eval where
 import Syntax
-import Error
-import Control.Monad.Except
+-- import Debug.Trace
 
-eval :: RacketVal -> ThrowsError RacketVal
-eval val@(Atom "empty") = return $ List []
-eval val@(String _) = return val
-eval val@(Number _) = return val
-eval val@(Bool _) = return val
-eval (List [Atom "if", cond, thens, elses]) =
+eval :: Env -> RacketVal -> IOThrowsError RacketVal
+eval env val@(Atom id) = getVar env id
+eval env val@(List ((Atom "cond"):conds)) = cond env conds
+eval env val@(String _) = return val
+eval env val@(Number _) = return val
+eval env val@(Bool _) = return val
+eval env (List [Atom "if", cond, thens, elses]) =
   do
-    result <- eval cond
+    result <- eval env cond
     case result of
-      Bool False -> eval elses
-      otherwise -> eval thens
-eval (List [Atom "quote", val]) = return val
-eval (List (Atom func : args)) = mapM eval args >>= apply func
-eval val@(Cond question answer) = return val
-eval badForm = throwError $ BadSpecialForm "unrecognized special form" badForm
+      Bool False -> eval env elses
+      otherwise -> eval env thens
+eval env (List [Atom "set!", Atom var, form]) = eval env form >>= setVar env var
+eval env (List [Atom "define", Atom var, form]) = eval env form >>= defineVar env var
+eval env (List [Atom "quote", val]) = return val
+eval env (List (Atom func : args)) = mapM (eval env) args >>= liftThrows . apply func
+eval env badForm = throwError $ BadSpecialForm "unrecognized special form" badForm
 
 apply :: String -> [RacketVal] -> ThrowsError RacketVal
 apply func args = maybe (throwError $ NotFunction "unrecognized primitive function args" func)
@@ -52,20 +53,19 @@ primitives = [("+", numericBinop (+)),
               ("eqv?", eqv),
               ("equal?", equal),
               ("eq?", eq),
-              ("cond", cond),
               ("first", car),
               ("rest", cdr)]
 
-cond :: [RacketVal] -> ThrowsError RacketVal
-cond [] = throwError $ Default "cond: all question results were false"
-cond ((Cond question answer):rest) = do
-  let result = eval question
+cond :: Env -> [RacketVal] -> IOThrowsError RacketVal
+cond env [] = throwError $ Default "cond: all question results were false"
+cond env ((Cond question answer):rest) = do
+  result <- eval env question
   case result of
-    Left err -> throwError err
-    Right (Bool True) -> (eval answer)
-    Right (Bool False) -> (cond rest)
-cond (badArg:rest) = throwError $ TypeMismatch "cond" badArg
-
+    (Bool False) -> (cond env rest)
+    (Bool True) -> eval env answer
+    _ -> throwError $ TypeMismatch "bool" result
+cond env ((List [question, answer]):rest) = cond env ((Cond question answer):rest)
+cond env badArgList = throwError $ TypeMismatch "cond" (head badArgList)
 
 
 eqv :: [RacketVal] -> ThrowsError RacketVal
@@ -125,8 +125,8 @@ cons badArgList = throwError $ NumArgs 2 badArgList
   
 
 numericBinop :: (Integer -> Integer -> Integer) -> [RacketVal] -> ThrowsError RacketVal
-numericBinop op [] = throwError $ NumArgs 2 []
-numericBinop op singleVal@[_] = throwError $ NumArgs 2 singleVal
+-- numericBinop op [] = throwError $ NumArgs 2 []
+-- numericBinop op singleVal@[_] = throwError $ NumArgs 2 singleVal
 numericBinop op params = mapM unpackNum params >>= return . Number . foldl1 op
 
 unpackNum :: RacketVal -> ThrowsError Integer

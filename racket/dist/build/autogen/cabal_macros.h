@@ -21,6 +21,13 @@
   (major1) == 3 && (major2) <  1 || \
   (major1) == 3 && (major2) == 1 && (minor) <= 11)
 
+/* package transformers-0.4.2.0 */
+#define VERSION_transformers "0.4.2.0"
+#define MIN_VERSION_transformers(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  4 || \
+  (major1) == 0 && (major2) == 4 && (minor) <= 2)
+
 /* tool gcc-5.4.0 */
 #define TOOL_VERSION_gcc "5.4.0"
 #define MIN_TOOL_VERSION_gcc(major1,major2,minor) (\
@@ -77,5 +84,5 @@
   (major1) == 2 && (major2) <  26 || \
   (major1) == 2 && (major2) == 26 && (minor) <= 0)
 
-#define CURRENT_PACKAGE_KEY "racke_G7Pnbjjbtsi2VTjCWTQNvY"
+#define CURRENT_PACKAGE_KEY "racke_IBGPTrDtWtXGWiepJRCkM7"
 

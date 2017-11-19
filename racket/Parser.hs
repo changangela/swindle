@@ -1,6 +1,5 @@
 module Parser where
 import Syntax
-import Error
 import System.Environment
 import Text.ParserCombinators.Parsec hiding (spaces)
 

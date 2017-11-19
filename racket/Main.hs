@@ -1,7 +1,7 @@
 module Main where
 import Parser
 import Eval
-import Error
+import Syntax
 import System.IO
 import Control.Monad
  
@@ -11,13 +11,17 @@ main = runRepl
 
 -- REPL : read eval print loop
 runRepl :: IO ()
-runRepl = until_ (== "(exit)") (readPrompt "racket>> ") evalAndPrint
+runRepl = racketEnv >>= until_ (== "(exit)") (readPrompt "racket>> ") . evalAndPrint
 
-evalString :: String -> IO String
-evalString expr = return $ extractValue $ trapError (liftM show $ readExpr expr >>= eval)
+evalString :: Env -> String -> IO String
+evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
 
-evalAndPrint :: String -> IO ()
-evalAndPrint expr = evalString expr >>= putStrLn
+evalAndPrint :: Env -> String -> IO ()
+evalAndPrint env expr = evalString env expr >>= putStrLn
+
+
+
+
 
 flushStr :: String -> IO ()
 flushStr str = putStr str >> hFlush stdout
@@ -31,3 +35,7 @@ until_ pred prompt action = do
   if pred result
     then return ()
     else action result >> until_ pred prompt action
+
+-- runOne :: String -> IO ()
+-- runOne expr = nullEnv >>= flip evalAndPrint expr
+
