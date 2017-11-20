@@ -50,5 +50,6 @@ bindVars envRef bindings = readIORef envRef >>= extendEnv bindings >>= newIORef
             return (var, ref)
 
 -- initialize some keywords
+
 swindleEnv :: IO Env
 swindleEnv = nullEnv >>= (flip bindVars [("empty", List [])])
