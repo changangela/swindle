@@ -10,23 +10,22 @@ main :: IO ()
 
 main = runInputT defaultSettings runRepl
 
--- until_ :: InputT IO ()
-
-
+-- main = runRepl
 
 
 -- REPL : read eval print loop
+-- runRepl :: IO Env -> InputT IO ()
+-- runRepl env = do
+--   input <- getInputLine "swindle>> "
+--   case input of
+--     Nothing -> return ()
+--     Just "(exit)" -> return ()
+--     Just input -> liftIO $ (env >>= (flip evalAndPrint input))
+--   runRepl env
+
+-- runRepl :: IO ()
 runRepl :: InputT IO ()
-runRepl = do
-  input <- getInputLine "swindle>> "
-  case input of
-    Nothing -> return ()
-    Just "(exit)" -> return ()
-    Just input -> liftIO $ (swindleEnv >>= (flip evalAndPrint input))
-  runRepl
-
-
--- runRepl = swindleEnv >>= until_ (== "(exit)") (readPrompt "swindle>> ") . evalAndPrint
+runRepl = liftIO $ swindleEnv >>= until_ (== "(exit)") (readPrompt "swindle>> ") . evalAndPrint
 
 evalString :: Env -> String -> IO String
 evalString env expr = runIOThrows $ liftM show $ (liftThrows $ readExpr expr) >>= eval env
@@ -41,13 +40,13 @@ flushStr str = putStr str >> hFlush stdout
 readPrompt :: String -> IO String
 readPrompt prompt = flushStr prompt >> getLine
 
--- until_ :: Monad m => (a -> Bool) -> m a -> (a -> m ()) -> m ()
--- until_ pred prompt action = do
---   result <- prompt
---   if pred result
---     then return ()
---     else action result >> until_ pred prompt action
+until_ :: Monad m => (a -> Bool) -> m a -> (a -> m ()) -> m ()
+until_ pred prompt action = do
+  result <- prompt
+  if pred result
+    then return ()
+    else action result >> until_ pred prompt action
 
--- runOne :: String -> IO ()
--- runOne expr = nullEnv >>= flip evalAndPrint expr
+runOne :: String -> IO ()
+runOne expr = nullEnv >>= flip evalAndPrint expr
 

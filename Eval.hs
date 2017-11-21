@@ -1,8 +1,9 @@
 module Eval where
 import Syntax
 import Parser
+import Control.Exception
 
--- import Debug.Trace
+import Debug.Trace
 
 eval :: Env -> RacketVal -> IOThrowsError RacketVal
 eval env val@(Atom id) = getVar env id
@@ -47,7 +48,7 @@ apply (Func params varargs body closure) args =
             Just argName -> liftIO $ bindVars env [(argName, List $ remainingArgs)]
             Nothing -> return env 
 
--- apply (IOFunc func) args = liftfunc args
+apply (IOFunc func) args = func args
 
 makeFunc varargs env params body = return $ Func (map showVal params) varargs body env
 bindFunc constructor (var, func) = (var, constructor func)
@@ -120,7 +121,8 @@ applyProc [func, List args] = apply func args
 applyProc (func : args) = apply func args
 
 makePort :: IOMode -> [RacketVal] -> IOThrowsError RacketVal
-makePort mode [String filename] = liftM Port $ liftIO $ openFile filename mode
+makePort mode [String filename] = trace ("loading...") (liftM Port $ liftIO $ openFile filename mode)
+makePort mode badArgList = throwError $ TypeMismatch "string" (head badArgList)
 
 closePort :: [RacketVal] -> IOThrowsError RacketVal
 closePort [Port port] = liftIO $ hClose port >> (return $ Bool True)
@@ -138,7 +140,7 @@ readContents :: [RacketVal] -> IOThrowsError RacketVal
 readContents [String filename] = liftM String $ liftIO $ readFile filename
 
 load :: String -> IOThrowsError [RacketVal]
-load filename = (liftIO $ readFile filename) >>= liftThrows . readExprList
+load filename = ((liftIO $ readFile filename) >>= liftThrows . readExprList)
 
 readAll :: [RacketVal] -> IOThrowsError RacketVal
 readAll [String filename] = liftM List $ load filename
