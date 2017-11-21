@@ -1,5 +1,5 @@
-# racket
-A R5RS racket interpreter built with Haskell.
+# swindle
+**swindle** is a R5RS scheme interpreter written in Haskell.
 
 ### installation
 ```
@@ -10,4 +10,3 @@ cabal run
 
 ### usage
 
- 
