@@ -3,9 +3,8 @@
 
 ### installation
 ```
-cabal install
-cabal build
-cabal run
+$ cabal install
+$ cabal run
 ```
 
 ### usage
